@@ -93,13 +93,6 @@
     </None>
     <None Include="packages.Caliburn.Micro.Platform.NET40.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Caliburn.Micro\Caliburn.Micro.NET40.csproj">
-      <Project>{5198b87d-8e7b-48d9-960d-63170a6956c5}</Project>
-      <Name>Caliburn.Micro.NET40</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

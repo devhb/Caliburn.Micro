@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     /// <summary>
     /// A base class for various implementations of <see cref="IConductor"/> that maintain an active item.
     /// </summary>
@@ -28,13 +30,13 @@
         /// </summary>
         /// <param name="newItem">The new item to activate.</param>
         /// <param name="closePrevious">Indicates whether or not to close the previous active item.</param>
-        protected virtual void ChangeActiveItem(T newItem, bool closePrevious) {
-            ScreenExtensions.TryDeactivate(activeItem, closePrevious);
+        protected virtual async Task ChangeActiveItem(T newItem, bool closePrevious)
+        {
+            await ScreenExtensions.TryDeactivate(activeItem, closePrevious);
 
             newItem = EnsureItem(newItem);
 
-            if(IsActive)
-                ScreenExtensions.TryActivate(newItem);
+            if (IsActive) await ScreenExtensions.TryActivate(newItem);
 
             activeItem = newItem;
             NotifyOfPropertyChange("ActiveItem");

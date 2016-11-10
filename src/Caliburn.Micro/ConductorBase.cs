@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -19,12 +21,12 @@
             set { closeStrategy = value; }
         }
 
-        void IConductor.ActivateItem(object item) {
-            ActivateItem((T) item);
+        async Task IConductor.ActivateItem(object item) {
+            await ActivateItem((T) item);
         }
 
-        void IConductor.DeactivateItem(object item, bool close) {
-            DeactivateItem((T) item, close);
+        async Task IConductor.DeactivateItem(object item, bool close) {
+            await DeactivateItem((T) item, close);
         }
 
         IEnumerable IParent.GetChildren() {
@@ -46,14 +48,14 @@
         /// Activates the specified item.
         /// </summary>
         /// <param name="item">The item to activate.</param>
-        public abstract void ActivateItem(T item);
+        public abstract Task ActivateItem(T item);
 
         /// <summary>
         /// Deactivates the specified item.
         /// </summary>
         /// <param name="item">The item to close.</param>
         /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-        public abstract void DeactivateItem(T item, bool close);
+        public abstract Task DeactivateItem(T item, bool close);
 
         /// <summary>
         /// Called by a subclass when an activation needs processing.

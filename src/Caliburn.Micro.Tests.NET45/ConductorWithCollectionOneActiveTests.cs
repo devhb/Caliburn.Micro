@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro.WPF.Tests {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro.WPF.Tests {
     using System;
     using System.Globalization;
     using System.Linq;
@@ -32,42 +34,44 @@
         }
 
         [Fact]
-        public void ChildrenAreActivatedIfConductorIsActive() {
+        public async Task ChildrenAreActivatedIfConductorIsActive() {
             var conductor = new Conductor<IScreen>.Collection.OneActive();
             var conducted = new Screen();
             conductor.Items.Add(conducted);
-            ((IActivate)conductor).Activate();
-            conductor.ActivateItem(conducted);
+            await ((IActivate)conductor).Activate();
+            await  conductor.ActivateItem(conducted);
             Assert.True(conducted.IsActive);
             Assert.Equal(conducted, conductor.ActiveItem);
         }
 
         [Fact]
-        public void CanCloseIsTrueWhenItemsAreClosable() {
+        public async Task CanCloseIsTrueWhenItemsAreClosable() {
             var conductor = new Conductor<IScreen>.Collection.OneActive();
             var conducted = new StateScreen { IsClosable = true };
             conductor.Items.Add(conducted);
-            ((IActivate)conductor).Activate();
-            conductor.CanClose(Assert.True);
+            await ((IActivate)conductor).Activate();
+            var close = await conductor.CanClose();
+            Assert.True(close);
             Assert.False(conducted.IsClosed);
         }
 
         [Fact(Skip = "Investigating close issue. http://caliburnmicro.codeplex.com/discussions/275824")]
-        public void CanCloseIsTrueWhenItemsAreNotClosableAndCloseStrategyCloses() {
+        public async Task CanCloseIsTrueWhenItemsAreNotClosableAndCloseStrategyCloses() {
             var conductor = new Conductor<IScreen>.Collection.OneActive { CloseStrategy = new DefaultCloseStrategy<IScreen>(true) };
             var conducted = new StateScreen { IsClosable = true };
             conductor.Items.Add(conducted);
-            ((IActivate)conductor).Activate();
-            conductor.CanClose(Assert.True);
+            await ((IActivate)conductor).Activate();
+            var close = await conductor.CanClose();
+            Assert.True(close);
             Assert.True(conducted.IsClosed);
         }
 
         [Fact(Skip = "ActiveItem currently set regardless of IsActive value. See http://caliburnmicro.codeplex.com/discussions/276375")]
-        public void ChildrenAreNotActivatedIfConductorIsNotActive() {
+        public async Task ChildrenAreNotActivatedIfConductorIsNotActive() {
             var conductor = new Conductor<IScreen>.Collection.OneActive();
             var conducted = new Screen();
             conductor.Items.Add(conducted);
-            conductor.ActivateItem(conducted);
+            await conductor.ActivateItem(conducted);
             Assert.False(conducted.IsActive);
             Assert.NotEqual(conducted, conductor.ActiveItem);
         }
@@ -110,7 +114,7 @@
         }
 
         [Fact] // See http://caliburnmicro.codeplex.com/discussions/430917
-        public void TryCloseStressTest()
+        public async Task TryCloseStressTest()
         {
             var conductor = new Conductor<IScreen>.Collection.OneActive();
             var conducted = Enumerable.Range(0, 10000)
@@ -122,43 +126,39 @@
             conductor.Items.Insert(0, defered1);
             conductor.Items.Insert(500, defered2);
 
-            var finished = false;
-            conductor.CanClose(canClose => {
-                finished = true;
-                Assert.True(canClose);
-            });
-            Assert.False(finished);
-
-            defered1.TryClose();
-            defered2.TryClose();
-            Assert.True(finished);
+            var actualCanClose = await conductor.CanClose();
+            
+            Assert.True(actualCanClose);
+            
+            await defered1.TryClose();
+            await defered2.TryClose();
+            
         }
 
         class StateScreen : Screen {
             public Boolean IsClosed { get; private set; }
             public Boolean IsClosable { get; set; }
 
-            public override void CanClose(Action<bool> callback) {
-                callback(IsClosable);
+            public override Task<bool> CanClose() {
+                return Task.FromResult(IsClosable);
             }
 
-            protected override void OnDeactivate(bool close) {
+            protected override Task OnDeactivate(bool close) {
                 base.OnDeactivate(close);
                 IsClosed = close;
+                return TaskExtensions.CompletedTask;
             }
         }
 
         class DeferredCloseScreen : StateScreen {
             Action<bool> closeCallback;
 
-            public override void CanClose(Action<bool> callback) {
-                closeCallback = callback;
+            public override Task<bool> CanClose() {
+                return TaskExtensions.TrueTask;
             }
 
-            public override void TryClose(bool? dialogResult = null) {
-                if (closeCallback != null) {
-                    closeCallback(IsClosable);
-                }
+            public override Task<bool?> TryClose() {
+                return Task.FromResult(new bool?(IsClosable));
             }
         }
     }

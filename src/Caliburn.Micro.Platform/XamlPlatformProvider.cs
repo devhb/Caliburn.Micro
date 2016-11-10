@@ -12,7 +12,7 @@
 #endif
 
     /// <summary>
-    /// A <see cref="IPlatformProvider"/> implementation for the XAML platfrom.
+    /// A <see cref="IPlatformProvider"/> implementation for the XAML platform.
     /// </summary>
     public class XamlPlatformProvider : IPlatformProvider {
 #if WinRT
@@ -202,7 +202,7 @@
             if (child != null) {
                 var conductor = child.Parent as IConductor;
                 if (conductor != null) {
-                    return () => conductor.CloseItem(viewModel);
+                    return async () => await conductor.CloseItem(viewModel);
                 }
             }
 

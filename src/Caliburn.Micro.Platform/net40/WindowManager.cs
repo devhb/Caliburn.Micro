@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -31,11 +33,11 @@
         void ShowWindow(object rootModel, object context = null, IDictionary<string, object> settings = null);
 
         /// <summary>
-        /// Shows a popup at the current mouse position.
+        /// Shows a pop up at the current mouse position.
         /// </summary>
         /// <param name="rootModel">The root model.</param>
         /// <param name="context">The view context.</param>
-        /// <param name="settings">The optional popup settings.</param>
+        /// <param name="settings">The optional pop up settings.</param>
         void ShowPopup(object rootModel, object context = null, IDictionary<string, object> settings = null);
     }
 
@@ -48,7 +50,7 @@
         /// </summary>
         /// <param name="rootModel">The root model.</param>
         /// <param name="context">The context.</param>
-        /// <param name="settings">The dialog popup settings.</param>
+        /// <param name="settings">The dialog pop up settings.</param>
         /// <returns>The dialog result.</returns>
         public virtual bool? ShowDialog(object rootModel, object context = null, IDictionary<string, object> settings = null){
             return CreateWindow(rootModel, true, context, settings).ShowDialog();
@@ -78,11 +80,11 @@
         }
 
         /// <summary>
-        /// Shows a popup at the current mouse position.
+        /// Shows a pop up at the current mouse position.
         /// </summary>
         /// <param name="rootModel">The root model.</param>
         /// <param name="context">The view context.</param>
-        /// <param name="settings">The optional popup settings.</param>
+        /// <param name="settings">The optional pop up settings.</param>
         public virtual void ShowPopup(object rootModel, object context = null, IDictionary<string, object> settings = null) {
             var popup = CreatePopup(rootModel, settings);
             var view = ViewLocator.LocateForModel(rootModel, popup, context);
@@ -108,11 +110,11 @@
         }
 
         /// <summary>
-        /// Creates a popup for hosting a popup window.
+        /// Creates a pop up for hosting a pop up window.
         /// </summary>
         /// <param name="rootModel">The model.</param>
-        /// <param name="settings">The optional popup settings.</param>
-        /// <returns>The popup.</returns>
+        /// <param name="settings">The optional pop up settings.</param>
+        /// <returns>The pop up.</returns>
         protected virtual Popup CreatePopup(object rootModel, IDictionary<string, object> settings) {
             var popup = new Popup();
 
@@ -133,9 +135,9 @@
         /// Creates a window.
         /// </summary>
         /// <param name="rootModel">The view model.</param>
-        /// <param name="isDialog">Whethor or not the window is being shown as a dialog.</param>
+        /// <param name="isDialog">Whether or not the window is being shown as a dialog.</param>
         /// <param name="context">The view context.</param>
-        /// <param name="settings">The optional popup settings.</param>
+        /// <param name="settings">The optional pop up settings.</param>
         /// <returns>The window.</returns>
         protected virtual Window CreateWindow(object rootModel, bool isDialog, object context, IDictionary<string, object> settings) {
             var view = EnsureWindow(rootModel, ViewLocator.LocateForModel(rootModel, null, context), isDialog);
@@ -155,11 +157,11 @@
         }
 
         /// <summary>
-        /// Makes sure the view is a window is is wrapped by one.
+        /// Makes sure the view is a window is wrapped by one.
         /// </summary>
         /// <param name="model">The view model.</param>
         /// <param name="view">The view.</param>
-        /// <param name="isDialog">Whethor or not the window is being shown as a dialog.</param>
+        /// <param name="isDialog">Whether or not the window is being shown as a dialog.</param>
         /// <returns>The window.</returns>
         protected virtual Window EnsureWindow(object model, object view, bool isDialog) {
             var window = view as Window;
@@ -212,7 +214,7 @@
         /// </summary>
         /// <param name="rootModel">The root model.</param>
         /// <param name="context">The context.</param>
-        /// <param name="settings">The optional popup settings.</param>
+        /// <param name="settings">The optional pop up settings.</param>
         /// <returns>The page.</returns>
         public virtual Page CreatePage(object rootModel, object context, IDictionary<string, object> settings) {
             var view = EnsurePage(rootModel, ViewLocator.LocateForModel(rootModel, null, context));
@@ -302,7 +304,7 @@
                 }
             }
 
-            void Closed(object sender, EventArgs e) {
+            async void Closed(object sender, EventArgs e) {
                 view.Closed -= Closed;
                 view.Closing -= Closing;
 
@@ -313,7 +315,7 @@
                 var deactivatable = (IDeactivate)model;
 
                 deactivatingFromView = true;
-                deactivatable.Deactivate(true);
+                await deactivatable.Deactivate(true);
                 deactivatingFromView = false;
             }
 
@@ -335,39 +337,31 @@
                 deactivateFromViewModel = false;
             }
 
-            void Closing(object sender, CancelEventArgs e) {
+            async void Closing(object sender, CancelEventArgs e) {
                 if (e.Cancel) {
                     return;
                 }
-
-                var guard = (IGuardClose)model;
 
                 if (actuallyClosing) {
                     actuallyClosing = false;
                     return;
                 }
 
-                bool runningAsync = false, shouldEnd = false;
+                e.Cancel = ! await EvaluateCanClose();
+            }
 
-                guard.CanClose(canClose => {
-                    Execute.OnUIThread(() => {
-                        if(runningAsync && canClose) {
-                            actuallyClosing = true;
-                            view.Close();
-                        }
-                        else {
-                            e.Cancel = !canClose;
-                        }
+            private async Task<bool> EvaluateCanClose() {
+                var guard = (IGuardClose)model;
 
-                        shouldEnd = true;
-                    });
-                });
+                var closeResult = await guard.CanClose();
 
-                if (shouldEnd) {
-                    return;
-                }
+                if (closeResult) return true;
 
-                runningAsync = e.Cancel = true;
+                actuallyClosing = true;
+                view.Close();
+                actuallyClosing = false;
+
+                return false;
             }
         }
     }

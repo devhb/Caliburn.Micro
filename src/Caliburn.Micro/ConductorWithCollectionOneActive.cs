@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -57,17 +59,20 @@
                 /// Activates the specified item.
                 /// </summary>
                 /// <param name="item">The item to activate.</param>
-                public override void ActivateItem(T item) {
-                    if(item != null && item.Equals(ActiveItem)) {
-                        if (IsActive) {
-                            ScreenExtensions.TryActivate(item);
+                public override async Task ActivateItem(T item)
+                {
+                    if (item != null && item.Equals(ActiveItem))
+                    {
+                        if (IsActive)
+                        {
+                            await ScreenExtensions.TryActivate(item);
                             OnActivationProcessed(item, true);
                         }
 
                         return;
                     }
 
-                    ChangeActiveItem(item, false);
+                    await ChangeActiveItem(item, false);
                 }
 
                 /// <summary>
@@ -75,32 +80,38 @@
                 /// </summary>
                 /// <param name="item">The item to close.</param>
                 /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-                public override void DeactivateItem(T item, bool close) {
-                    if (item == null) {
+                public override async Task DeactivateItem(T item, bool close)
+                {
+                    if (item == null)
+                    {
                         return;
                     }
 
-                    if (!close) {
-                        ScreenExtensions.TryDeactivate(item, false);
+                    if (!close)
+                    {
+                        await ScreenExtensions.TryDeactivate(item, false);
                     }
-                    else {
-                        CloseStrategy.Execute(new[] { item }, (canClose, closable) => {
-                            if (canClose) {
-                                CloseItemCore(item);
-                            }
-                        });
+                    else
+                    {
+                        var closeResult = await CloseStrategy.Execute(new[] { item });
+                        if (closeResult.CanClose)
+                        {
+                            await CloseItemCore(item);
+                        }
                     }
                 }
 
-                void CloseItemCore(T item) {
-                    if(item.Equals(ActiveItem)) {
+                async Task CloseItemCore(T item) {
+                    if (item.Equals(ActiveItem))
+                    {
                         var index = items.IndexOf(item);
                         var next = DetermineNextItemToActivate(items, index);
 
-                        ChangeActiveItem(next, true);
+                        await ChangeActiveItem(next, true);
                     }
-                    else {
-                        ScreenExtensions.TryDeactivate(item, true);
+                    else
+                    {
+                        await ScreenExtensions.TryDeactivate(item, true);
                     }
 
                     items.Remove(item);
@@ -130,54 +141,63 @@
                 /// <summary>
                 /// Called to check whether or not this instance can close.
                 /// </summary>
-                /// <param name="callback">The implementor calls this action with the result of the close check.</param>
-                public override void CanClose(Action<bool> callback) {
-                    CloseStrategy.Execute(items.ToList(), (canClose, closable) => {
-                        if(!canClose && closable.Any()) {
-                            if(closable.Contains(ActiveItem)) {
-                                var list = items.ToList();
-                                var next = ActiveItem;
-                                do {
-                                    var previous = next;
-                                    next = DetermineNextItemToActivate(list, list.IndexOf(previous));
-                                    list.Remove(previous);
-                                } while(closable.Contains(next));
+                public override async Task<bool> CanClose()
+                {
+                    var closeResult = await CloseStrategy.Execute(items.ToList());
+                    if (!closeResult.CanClose && closeResult.Items.Any())
+                    {
+                        var closables = closeResult.Items;
+                        if (closables.Contains(ActiveItem))
+                        {
+                            var list = items.ToList();
+                            var next = ActiveItem;
+                            do
+                            {
+                                var previous = next;
+                                next = DetermineNextItemToActivate(list, list.IndexOf(previous));
+                                list.Remove(previous);
+                            } while (closables.Contains(next));
 
-                                var previousActive = ActiveItem;
-                                ChangeActiveItem(next, true);
-                                items.Remove(previousActive);
+                            var previousActive = ActiveItem;
+                            await ChangeActiveItem(next, true);
+                            items.Remove(previousActive);
 
-                                var stillToClose = closable.ToList();
-                                stillToClose.Remove(previousActive);
-                                closable = stillToClose;
-                            }
-
-                            closable.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
-                            items.RemoveRange(closable);
+                            var stillToClose = closeResult.Items.ToList();
+                            stillToClose.Remove(previousActive);
+                            closables = stillToClose.ToArray();
                         }
 
-                        callback(canClose);
-                    });
+                        var closeableItems = closeResult.Items.OfType<IDeactivate>().ToArray();
+                        var closeableTasks = closeableItems.Select(d => d.Deactivate(true));
+                        await Task.WhenAll(closeableTasks);
+                        items.RemoveRange((IEnumerable<T>)closeableItems);
+                    }
+                    return closeResult.CanClose;
                 }
 
                 /// <summary>
                 /// Called when activating.
                 /// </summary>
-                protected override void OnActivate() {
-                    ScreenExtensions.TryActivate(ActiveItem);
+                protected override async Task OnActivate()
+                {
+                    await ScreenExtensions.TryActivate(ActiveItem);
                 }
 
                 /// <summary>
                 /// Called when deactivating.
                 /// </summary>
-                /// <param name="close">Inidicates whether this instance will be closed.</param>
-                protected override void OnDeactivate(bool close) {
-                    if (close) {
-                        items.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
+                /// <param name="close">Indicates whether this instance will be closed.</param>
+                protected override async Task OnDeactivate(bool close) {
+
+                    if (close)
+                    {
+                        var deactivateables = items.OfType<IDeactivate>().Select(x => x.Deactivate(true));
+                        await Task.WhenAll(deactivateables);
                         items.Clear();
                     }
-                    else {
-                        ScreenExtensions.TryDeactivate(ActiveItem, false);
+                    else
+                    {
+                        await ScreenExtensions.TryDeactivate(ActiveItem, false);
                     }
                 }
 

@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
 
     /// <summary>
@@ -80,7 +82,7 @@
         /// </summary>
         public virtual event EventHandler<DeactivationEventArgs> Deactivated = delegate { };
 
-        void IActivate.Activate() {
+        async Task IActivate.Activate() {
             if (IsActive) {
                 return;
             }
@@ -89,12 +91,12 @@
 
             if (!IsInitialized) {
                 IsInitialized = initialized = true;
-                OnInitialize();
+                await OnInitialize();
             }
 
             IsActive = true;
             Log.Info("Activating {0}.", this);
-            OnActivate();
+            await OnActivate();
 
             var handler = Activated;
             if (handler != null) {
@@ -108,14 +110,18 @@
         /// <summary>
         /// Called when initializing.
         /// </summary>
-        protected virtual void OnInitialize() {}
+        protected virtual Task OnInitialize() {
+            return TaskExtensions.CompletedTask;
+        }
 
         /// <summary>
         /// Called when activating.
         /// </summary>
-        protected virtual void OnActivate() {}
+        protected virtual Task OnActivate() {
+            return TaskExtensions.CompletedTask;
+        }
 
-        void IDeactivate.Deactivate(bool close) {
+        async Task IDeactivate.Deactivate(bool close) {
             if (IsActive || (IsInitialized && close)) {
                 var attemptingDeactivationHandler = AttemptingDeactivation;
                 if (attemptingDeactivationHandler != null) {
@@ -127,7 +133,7 @@
 
                 IsActive = false;
                 Log.Info("Deactivating {0}.", this);
-                OnDeactivate(close);
+                await OnDeactivate(close);
 
                 var deactivatedHandler = Deactivated;
                 if (deactivatedHandler != null) {
@@ -147,24 +153,25 @@
         /// <summary>
         /// Called when deactivating.
         /// </summary>
-        /// <param name = "close">Inidicates whether this instance will be closed.</param>
-        protected virtual void OnDeactivate(bool close) {}
+        /// <param name = "close">Indicates whether this instance will be closed.</param>
+        protected virtual Task OnDeactivate(bool close) {
+            return TaskExtensions.CompletedTask;
+        }
 
         /// <summary>
         /// Called to check whether or not this instance can close.
         /// </summary>
-        /// <param name = "callback">The implementor calls this action with the result of the close check.</param>
-        public virtual void CanClose(Action<bool> callback) {
-            callback(true);
+        public virtual Task<bool> CanClose() {
+            return TaskExtensions.TrueTask;
         }
 
         /// <summary>
         /// Tries to close this instance by asking its Parent to initiate shutdown or by asking its corresponding view to close.
         /// Also provides an opportunity to pass a dialog result to it's corresponding view.
         /// </summary>
-        /// <param name="dialogResult">The dialog result.</param>
-        public virtual void TryClose(bool? dialogResult = null) {
-            PlatformProvider.Current.GetViewCloseAction(this, Views.Values, dialogResult).OnUIThread();
+        public virtual Task<bool?> TryClose() {
+            return Task.FromResult(new bool?(true));
+            //PlatformProvider.Current.GetViewCloseAction(this, Views.Values, dialogResult).OnUIThread();
         }
     }
 }

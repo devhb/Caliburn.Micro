@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
 
     /// <summary>
@@ -13,7 +15,7 @@
         /// <summary>
         /// Activates this instance.
         /// </summary>
-        void Activate();
+        Task Activate();
 
         /// <summary>
         /// Raised after activation occurs.

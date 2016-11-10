@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -10,10 +12,10 @@
         /// </summary>
         public partial class Collection {
             /// <summary>
-            /// An implementation of <see cref="IConductor"/> that holds on to many items wich are all activated.
+            /// An implementation of <see cref="IConductor"/> that holds on to many items which are all activated.
             /// </summary>
             public class AllActive : ConductorBase<T> {
-                private readonly BindableCollection<T> items = new BindableCollection<T>();
+                private readonly BindableCollection<T> m_items = new BindableCollection<T>();
                 private readonly bool openPublicItems;
 
                 /// <summary>
@@ -29,7 +31,7 @@
                 /// Initializes a new instance of the <see cref="Conductor&lt;T&gt;.Collection.AllActive"/> class.
                 /// </summary>
                 public AllActive() {
-                    items.CollectionChanged += (s, e) => {
+                    m_items.CollectionChanged += (s, e) => {
                         switch (e.Action) {
                             case NotifyCollectionChangedAction.Add:
                                 e.NewItems.OfType<IChild>().Apply(x => x.Parent = this);
@@ -42,7 +44,7 @@
                                 e.OldItems.OfType<IChild>().Apply(x => x.Parent = null);
                                 break;
                             case NotifyCollectionChangedAction.Reset:
-                                items.OfType<IChild>().Apply(x => x.Parent = this);
+                                m_items.OfType<IChild>().Apply(x => x.Parent = this);
                                 break;
                         }
                     };
@@ -51,53 +53,68 @@
                 /// <summary>
                 /// Gets the items that are currently being conducted.
                 /// </summary>
-                public IObservableCollection<T> Items {
-                    get { return items; }
+                public IObservableCollection<T> MItems {
+                    get { return m_items; }
                 }
 
                 /// <summary>
                 /// Called when activating.
                 /// </summary>
-                protected override void OnActivate() {
-                    items.OfType<IActivate>().Apply(x => x.Activate());
+                protected override async Task OnActivate()
+                {
+                    var activatables = m_items.OfType<IActivate>().Select(a => a.Activate());
+                    await Task.WhenAll(activatables);
                 }
 
                 /// <summary>
                 /// Called when deactivating.
                 /// </summary>
-                /// <param name="close">Inidicates whether this instance will be closed.</param>
-                protected override void OnDeactivate(bool close) {
-                    items.OfType<IDeactivate>().Apply(x => x.Deactivate(close));
-                    if (close) {
-                        items.Clear();
+                /// <param name="close">Indicates whether this instance will be closed.</param>
+                protected override async Task OnDeactivate(bool close)
+                {
+                    // remove items that are already closed
+                    var closeables = m_items.OfType<IDeactivate>().ToArray();
+                    var closeableResults = closeables.Select(c => c.Deactivate(true));
+                    await Task.WhenAll(closeableResults);
+
+                    if (close)
+                    {
+                        m_items.Clear();    
                     }
                 }
 
                 /// <summary>
                 /// Called to check whether or not this instance can close.
                 /// </summary>
-                /// <param name="callback">The implementor calls this action with the result of the close check.</param>
-                public override void CanClose(Action<bool> callback) {
-                    CloseStrategy.Execute(items.ToList(), (canClose, closable) => {
-                        if (!canClose && closable.Any()) {
-                            closable.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
-                            items.RemoveRange(closable);
-                        }
-
-                        callback(canClose);
-                    });
+                public override async Task<bool> CanClose()
+                {
+                    var closeResult = await CloseStrategy.Execute(m_items.ToList());
+                    
+                    if (!closeResult.CanClose && closeResult.Items.Length > 0)
+                    {
+                        // remove items that are already closed
+                        var closeables = closeResult.Items.OfType<IDeactivate>().ToArray();
+                        var closeableResults = closeables.Select(c => c.Deactivate(true));
+                        await Task.WhenAll(closeableResults);
+                        m_items.RemoveRange(closeables.Cast<T>());
+                    }
+                    return closeResult.CanClose;
                 }
 
                 /// <summary>
                 /// Called when initializing.
                 /// </summary>
-                protected override void OnInitialize() {
-                    if (openPublicItems) {
-                        GetType().GetProperties()
-                            .Where(x => x.Name != "Parent" && typeof (T).IsAssignableFrom(x.PropertyType))
+                protected override async Task OnInitialize()
+                {
+                    if (openPublicItems)
+                    {
+                        var activationItems = GetType().GetProperties()
+                            .Where(x => x.Name != "Parent" && typeof(T).IsAssignableFrom(x.PropertyType))
                             .Select(x => x.GetValue(this, null))
-                            .Cast<T>()
-                            .Apply(ActivateItem);
+                            .Cast<T>();
+
+                        var activationTasks = activationItems.OfType<IActivate>().Select(a => a.Activate());
+                        await Task.WhenAll(activationTasks);
                     }
                 }
 
@@ -105,15 +122,17 @@
                 /// Activates the specified item.
                 /// </summary>
                 /// <param name="item">The item to activate.</param>
-                public override void ActivateItem(T item) {
-                    if (item == null) {
+                public override async Task ActivateItem(T item) {
+                    if (item == null)
+                    {
                         return;
                     }
 
                     item = EnsureItem(item);
 
-                    if (IsActive) {
-                        ScreenExtensions.TryActivate(item);
+                    if (IsActive)
+                    {
+                        await ScreenExtensions.TryActivate(item);
                     }
 
                     OnActivationProcessed(item, true);
@@ -124,19 +143,23 @@
                 /// </summary>
                 /// <param name="item">The item to close.</param>
                 /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-                public override void DeactivateItem(T item, bool close) {
+                public override async Task DeactivateItem(T item, bool close)
+                {
                     if (item == null) {
                         return;
                     }
 
-                    if (close) {
-                        CloseStrategy.Execute(new[] {item}, (canClose, closable) => {
-                            if (canClose)
-                                CloseItemCore(item);
-                        });
+                    if (close)
+                    {
+                        var closeResult = await CloseStrategy.Execute(new[] {item});
+                        if (closeResult.CanClose)
+                        {
+                            await CloseItemCore(item);
+                        }
                     }
-                    else {
-                        ScreenExtensions.TryDeactivate(item, false);
+                    else
+                    {
+                        await ScreenExtensions.TryDeactivate(item, false);
                     }
                 }
 
@@ -145,12 +168,12 @@
                 /// </summary>
                 /// <returns>The collection of children.</returns>
                 public override IEnumerable<T> GetChildren() {
-                    return items;
+                    return m_items;
                 }
 
-                private void CloseItemCore(T item) {
-                    ScreenExtensions.TryDeactivate(item, true);
-                    items.Remove(item);
+                private async Task CloseItemCore(T item) {
+                    await ScreenExtensions.TryDeactivate(item, true);
+                    m_items.Remove(item);
                 }
 
                 /// <summary>
@@ -159,13 +182,13 @@
                 /// <param name="newItem">The item that is about to be activated.</param>
                 /// <returns>The item to be activated.</returns>
                 protected override T EnsureItem(T newItem) {
-                    var index = items.IndexOf(newItem);
+                    var index = m_items.IndexOf(newItem);
 
                     if (index == -1) {
-                        items.Add(newItem);
+                        m_items.Add(newItem);
                     }
                     else {
-                        newItem = items[index];
+                        newItem = m_items[index];
                     }
 
                     return base.EnsureItem(newItem);

@@ -6,6 +6,17 @@
     /// Extension methods to bring <see cref="System.Threading.Tasks.Task"/> and <see cref="Caliburn.Micro.IResult"/> together.
     /// </summary>
     public static class TaskExtensions {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly Task<bool> TrueTask = Task.FromResult(true);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly Task CompletedTask = TrueTask;
+
         /// <summary>
         /// Executes an <see cref="Caliburn.Micro.IResult"/> asynchronous.
         /// </summary>
@@ -59,7 +70,7 @@
         }
 
         /// <summary>
-        /// Encapsulates a task inside a couroutine.
+        /// Encapsulates a task inside a coroutine.
         /// </summary>
         /// <param name="task">The task.</param>
         /// <returns>The coroutine that encapsulates the task.</returns>
@@ -68,7 +79,7 @@
         }
 
         /// <summary>
-        /// Encapsulates a task inside a couroutine.
+        /// Encapsulates a task inside a coroutine.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="task">The task.</param>

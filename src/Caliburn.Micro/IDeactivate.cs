@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro {
+﻿using System.Threading.Tasks;
+
+namespace Caliburn.Micro {
     using System;
 
     /// <summary>
@@ -14,7 +16,7 @@
         /// Deactivates this instance.
         /// </summary>
         /// <param name="close">Indicates whether or not this instance is being closed.</param>
-        void Deactivate(bool close);
+        Task Deactivate(bool close);
 
         /// <summary>
         /// Raised after deactivation.
