@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -15,7 +16,7 @@ namespace Caliburn.Micro {
             /// An implementation of <see cref="IConductor"/> that holds on to many items which are all activated.
             /// </summary>
             public class AllActive : ConductorBase<T> {
-                private readonly BindableCollection<T> m_items = new BindableCollection<T>();
+                private readonly BindableCollection<T> items = new BindableCollection<T>();
                 private readonly bool openPublicItems;
 
                 /// <summary>
@@ -31,7 +32,7 @@ namespace Caliburn.Micro {
                 /// Initializes a new instance of the <see cref="Conductor&lt;T&gt;.Collection.AllActive"/> class.
                 /// </summary>
                 public AllActive() {
-                    m_items.CollectionChanged += (s, e) => {
+                    items.CollectionChanged += (s, e) => {
                         switch (e.Action) {
                             case NotifyCollectionChangedAction.Add:
                                 e.NewItems.OfType<IChild>().Apply(x => x.Parent = this);
@@ -44,7 +45,7 @@ namespace Caliburn.Micro {
                                 e.OldItems.OfType<IChild>().Apply(x => x.Parent = null);
                                 break;
                             case NotifyCollectionChangedAction.Reset:
-                                m_items.OfType<IChild>().Apply(x => x.Parent = this);
+                                items.OfType<IChild>().Apply(x => x.Parent = this);
                                 break;
                         }
                     };
@@ -53,16 +54,17 @@ namespace Caliburn.Micro {
                 /// <summary>
                 /// Gets the items that are currently being conducted.
                 /// </summary>
-                public IObservableCollection<T> MItems {
-                    get { return m_items; }
+                public IObservableCollection<T> Items {
+                    get { return items; }
                 }
 
                 /// <summary>
                 /// Called when activating.
                 /// </summary>
-                protected override async Task OnActivate()
+                /// <param name="cancellationToken"></param>
+                protected override async Task OnActivate(CancellationToken cancellationToken = default(CancellationToken))
                 {
-                    var activatables = m_items.OfType<IActivate>().Select(a => a.Activate());
+                    var activatables = items.OfType<IActivate>().Select(a => a.Activate(cancellationToken));
                     await Task.WhenAll(activatables);
                 }
 
@@ -70,16 +72,17 @@ namespace Caliburn.Micro {
                 /// Called when deactivating.
                 /// </summary>
                 /// <param name="close">Indicates whether this instance will be closed.</param>
-                protected override async Task OnDeactivate(bool close)
+                /// <param name="cancellationToken"></param>
+                protected override async Task OnDeactivate(bool close, CancellationToken cancellationToken = default(CancellationToken))
                 {
                     // remove items that are already closed
-                    var closeables = m_items.OfType<IDeactivate>().ToArray();
-                    var closeableResults = closeables.Select(c => c.Deactivate(true));
+                    var closeables = items.OfType<IDeactivate>().ToArray();
+                    var closeableResults = closeables.Select(c => c.Deactivate(true, cancellationToken));
                     await Task.WhenAll(closeableResults);
 
                     if (close)
                     {
-                        m_items.Clear();    
+                        items.Clear();    
                     }
                 }
 
@@ -88,7 +91,7 @@ namespace Caliburn.Micro {
                 /// </summary>
                 public override async Task<bool> CanClose()
                 {
-                    var closeResult = await CloseStrategy.Execute(m_items.ToList());
+                    var closeResult = await CloseStrategy.Execute(items.ToList());
                     
                     if (!closeResult.CanClose && closeResult.Items.Length > 0)
                     {
@@ -96,7 +99,7 @@ namespace Caliburn.Micro {
                         var closeables = closeResult.Items.OfType<IDeactivate>().ToArray();
                         var closeableResults = closeables.Select(c => c.Deactivate(true));
                         await Task.WhenAll(closeableResults);
-                        m_items.RemoveRange(closeables.Cast<T>());
+                        items.RemoveRange(closeables.Cast<T>());
                     }
                     return closeResult.CanClose;
                 }
@@ -104,7 +107,8 @@ namespace Caliburn.Micro {
                 /// <summary>
                 /// Called when initializing.
                 /// </summary>
-                protected override async Task OnInitialize()
+                /// <param name="cancellationToken"></param>
+                protected override async Task OnInitialize(CancellationToken cancellationToken = default(CancellationToken))
                 {
                     if (openPublicItems)
                     {
@@ -113,7 +117,7 @@ namespace Caliburn.Micro {
                             .Select(x => x.GetValue(this, null))
                             .Cast<T>();
 
-                        var activationTasks = activationItems.OfType<IActivate>().Select(a => a.Activate());
+                        var activationTasks = activationItems.OfType<IActivate>().Select(a => a.Activate(cancellationToken));
                         await Task.WhenAll(activationTasks);
                     }
                 }
@@ -122,7 +126,8 @@ namespace Caliburn.Micro {
                 /// Activates the specified item.
                 /// </summary>
                 /// <param name="item">The item to activate.</param>
-                public override async Task ActivateItem(T item) {
+                /// <param name="cancellationToken"></param>
+                public override async Task ActivateItem(T item, CancellationToken cancellationToken = default(CancellationToken)) {
                     if (item == null)
                     {
                         return;
@@ -132,7 +137,7 @@ namespace Caliburn.Micro {
 
                     if (IsActive)
                     {
-                        await ScreenExtensions.TryActivate(item);
+                        await ScreenExtensions.TryActivate(item, cancellationToken);
                     }
 
                     OnActivationProcessed(item, true);
@@ -143,7 +148,8 @@ namespace Caliburn.Micro {
                 /// </summary>
                 /// <param name="item">The item to close.</param>
                 /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-                public override async Task DeactivateItem(T item, bool close)
+                /// <param name="cancellationToken"></param>
+                public override async Task DeactivateItem(T item, bool close, CancellationToken cancellationToken = default(CancellationToken))
                 {
                     if (item == null) {
                         return;
@@ -154,12 +160,12 @@ namespace Caliburn.Micro {
                         var closeResult = await CloseStrategy.Execute(new[] {item});
                         if (closeResult.CanClose)
                         {
-                            await CloseItemCore(item);
+                            await CloseItemCore(item, cancellationToken);
                         }
                     }
                     else
                     {
-                        await ScreenExtensions.TryDeactivate(item, false);
+                        await ScreenExtensions.TryDeactivate(item, false, cancellationToken);
                     }
                 }
 
@@ -168,12 +174,12 @@ namespace Caliburn.Micro {
                 /// </summary>
                 /// <returns>The collection of children.</returns>
                 public override IEnumerable<T> GetChildren() {
-                    return m_items;
+                    return items;
                 }
 
-                private async Task CloseItemCore(T item) {
-                    await ScreenExtensions.TryDeactivate(item, true);
-                    m_items.Remove(item);
+                private async Task CloseItemCore(T item, CancellationToken cancellationToken = default(CancellationToken)) {
+                    await ScreenExtensions.TryDeactivate(item, true, cancellationToken);
+                    items.Remove(item);
                 }
 
                 /// <summary>
@@ -182,13 +188,13 @@ namespace Caliburn.Micro {
                 /// <param name="newItem">The item that is about to be activated.</param>
                 /// <returns>The item to be activated.</returns>
                 protected override T EnsureItem(T newItem) {
-                    var index = m_items.IndexOf(newItem);
+                    var index = items.IndexOf(newItem);
 
                     if (index == -1) {
-                        m_items.Add(newItem);
+                        items.Add(newItem);
                     }
                     else {
-                        newItem = m_items[index];
+                        newItem = items[index];
                     }
 
                     return base.EnsureItem(newItem);

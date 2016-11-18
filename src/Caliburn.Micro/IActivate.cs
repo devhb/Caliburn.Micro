@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -15,7 +16,8 @@ namespace Caliburn.Micro {
         /// <summary>
         /// Activates this instance.
         /// </summary>
-        Task Activate();
+        /// <param name="cancellationToken"></param>
+        Task Activate(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Raised after activation occurs.

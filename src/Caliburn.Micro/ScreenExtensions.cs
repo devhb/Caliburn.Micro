@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -11,11 +12,12 @@ namespace Caliburn.Micro {
         /// Activates the item if it implements <see cref="IActivate"/>, otherwise does nothing.
         /// </summary>
         /// <param name="potentialActivatable">The potential activatable.</param>
-        public static async Task TryActivate(object potentialActivatable) {
+        /// <param name="cancellationToken"></param>
+        public static async Task TryActivate(object potentialActivatable, CancellationToken cancellationToken = default(CancellationToken)) {
             var activator = potentialActivatable as IActivate;
             if (activator == null) return;
 
-            await activator.Activate();
+            await activator.Activate(cancellationToken);
         }
 
         /// <summary>
@@ -23,11 +25,12 @@ namespace Caliburn.Micro {
         /// </summary>
         /// <param name="potentialDeactivatable">The potential deactivatable.</param>
         /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-        public static async Task TryDeactivate(object potentialDeactivatable, bool close) {
+        /// <param name="cancellationToken"></param>
+        public static Task TryDeactivate(object potentialDeactivatable, bool close, CancellationToken cancellationToken = default(CancellationToken)) {
             var deactivator = potentialDeactivatable as IDeactivate;
-            if (deactivator == null) return;
+            if (deactivator == null) return TaskExtensions.CompletedTask;
 
-            await deactivator.Deactivate(close);
+            return deactivator.Deactivate(close, cancellationToken);
         }
 
         /// <summary>
@@ -35,8 +38,9 @@ namespace Caliburn.Micro {
         /// </summary>
         /// <param name="conductor">The conductor.</param>
         /// <param name="item">The item to close.</param>
-        public static async Task CloseItem(this IConductor conductor, object item) {
-            await conductor.DeactivateItem(item, true);
+        /// <param name="cancellationToken"></param>
+        public static Task CloseItem(this IConductor conductor, object item, CancellationToken cancellationToken = default(CancellationToken)) {
+            return conductor.DeactivateItem(item, true, cancellationToken);
         }
 
         /// <summary>
@@ -44,8 +48,8 @@ namespace Caliburn.Micro {
         /// </summary>
         /// <param name="conductor">The conductor.</param>
         /// <param name="item">The item to close.</param>
-        public static async Task CloseItem<T>(this ConductorBase<T> conductor, T item) where T: class {
-            await conductor.DeactivateItem(item, true);
+        public static Task CloseItem<T>(this ConductorBase<T> conductor, T item, CancellationToken cancellationToken = default(CancellationToken)) where T: class {
+            return conductor.DeactivateItem(item, true, cancellationToken);
         }
 
         ///<summary>

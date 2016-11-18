@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -82,24 +83,37 @@ namespace Caliburn.Micro {
         /// </summary>
         public virtual event EventHandler<DeactivationEventArgs> Deactivated = delegate { };
 
-        async Task IActivate.Activate() {
-            if (IsActive) {
+        private struct ActivationState {
+            internal readonly bool IsInitialized;
+            internal readonly bool IsActive;
+
+            public ActivationState(bool isInitialized, bool active) {
+                IsInitialized = isInitialized;
+                IsActive = active;
+            }
+        }
+        async Task IActivate.Activate(CancellationToken cancellationToken)
+        {
+            if (IsActive)
+            {
                 return;
             }
 
             var initialized = false;
 
-            if (!IsInitialized) {
+            if (!IsInitialized)
+            {
                 IsInitialized = initialized = true;
-                await OnInitialize();
+                await OnInitialize(cancellationToken);
             }
 
             IsActive = true;
             Log.Info("Activating {0}.", this);
-            await OnActivate();
+            await OnActivate(cancellationToken);
 
             var handler = Activated;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, new ActivationEventArgs
                 {
                     WasInitialized = initialized
@@ -110,18 +124,20 @@ namespace Caliburn.Micro {
         /// <summary>
         /// Called when initializing.
         /// </summary>
-        protected virtual Task OnInitialize() {
+        /// <param name="cancellationToken"></param>
+        protected virtual Task OnInitialize(CancellationToken cancellationToken = default(CancellationToken)) {
             return TaskExtensions.CompletedTask;
         }
 
         /// <summary>
         /// Called when activating.
         /// </summary>
-        protected virtual Task OnActivate() {
+        /// <param name="cancellationToken"></param>
+        protected virtual Task OnActivate(CancellationToken cancellationToken = default(CancellationToken)) {
             return TaskExtensions.CompletedTask;
         }
 
-        async Task IDeactivate.Deactivate(bool close) {
+        async Task IDeactivate.Deactivate(bool close, CancellationToken cancellationToken) {
             if (IsActive || (IsInitialized && close)) {
                 var attemptingDeactivationHandler = AttemptingDeactivation;
                 if (attemptingDeactivationHandler != null) {
@@ -133,7 +149,7 @@ namespace Caliburn.Micro {
 
                 IsActive = false;
                 Log.Info("Deactivating {0}.", this);
-                await OnDeactivate(close);
+                await OnDeactivate(close, cancellationToken);
 
                 var deactivatedHandler = Deactivated;
                 if (deactivatedHandler != null) {
@@ -154,7 +170,8 @@ namespace Caliburn.Micro {
         /// Called when deactivating.
         /// </summary>
         /// <param name = "close">Indicates whether this instance will be closed.</param>
-        protected virtual Task OnDeactivate(bool close) {
+        /// <param name="cancellationToken"></param>
+        protected virtual Task OnDeactivate(bool close, CancellationToken cancellationToken = default(CancellationToken)) {
             return TaskExtensions.CompletedTask;
         }
 
@@ -169,8 +186,10 @@ namespace Caliburn.Micro {
         /// Tries to close this instance by asking its Parent to initiate shutdown or by asking its corresponding view to close.
         /// Also provides an opportunity to pass a dialog result to it's corresponding view.
         /// </summary>
-        public virtual Task<bool?> TryClose() {
-            return Task.FromResult(new bool?(true));
+        public virtual async Task<bool?> TryClose() {
+            bool? result = null;
+            await PlatformProvider.Current.GetViewCloseAction(this, Views.Values, result).OnUIThreadAsync();
+            return result;
             //PlatformProvider.Current.GetViewCloseAction(this, Views.Values, dialogResult).OnUIThread();
         }
     }

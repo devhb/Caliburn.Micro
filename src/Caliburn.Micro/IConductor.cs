@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -12,14 +13,16 @@ namespace Caliburn.Micro {
         /// Activates the specified item.
         /// </summary>
         /// <param name="item">The item to activate.</param>
-        Task ActivateItem(object item);
+        /// <param name="cancellationToken"></param>
+        Task ActivateItem(object item, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deactivates the specified item.
         /// </summary>
         /// <param name="item">The item to close.</param>
         /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-        Task DeactivateItem(object item, bool close);
+        /// <param name="cancellationToken"></param>
+        Task DeactivateItem(object item, bool close, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Occurs when an activation request is processed.

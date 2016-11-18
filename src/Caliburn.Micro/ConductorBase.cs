@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -10,7 +11,7 @@ namespace Caliburn.Micro {
     /// </summary>
     /// <typeparam name="T">The type that is being conducted.</typeparam>
     public abstract class ConductorBase<T> : Screen, IConductor, IParent<T> where T : class {
-        ICloseStrategy<T> closeStrategy;
+        private ICloseStrategy<T> closeStrategy;
 
         /// <summary>
         /// Gets or sets the close strategy.
@@ -21,12 +22,12 @@ namespace Caliburn.Micro {
             set { closeStrategy = value; }
         }
 
-        async Task IConductor.ActivateItem(object item) {
-            await ActivateItem((T) item);
+        Task IConductor.ActivateItem(object item, CancellationToken cancellationToken) {
+            return ActivateItem((T) item, cancellationToken);
         }
 
-        async Task IConductor.DeactivateItem(object item, bool close) {
-            await DeactivateItem((T) item, close);
+        Task IConductor.DeactivateItem(object item, bool close, CancellationToken cancellationToken) {
+            return DeactivateItem((T) item, close, cancellationToken);
         }
 
         IEnumerable IParent.GetChildren() {
@@ -48,14 +49,16 @@ namespace Caliburn.Micro {
         /// Activates the specified item.
         /// </summary>
         /// <param name="item">The item to activate.</param>
-        public abstract Task ActivateItem(T item);
+        /// <param name="cancellationToken"></param>
+        public abstract Task ActivateItem(T item, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deactivates the specified item.
         /// </summary>
         /// <param name="item">The item to close.</param>
         /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-        public abstract Task DeactivateItem(T item, bool close);
+        /// <param name="cancellationToken"></param>
+        public abstract Task DeactivateItem(T item, bool close, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Called by a subclass when an activation needs processing.

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -12,13 +13,14 @@ namespace Caliburn.Micro {
         /// Activates the specified item.
         /// </summary>
         /// <param name="item">The item to activate.</param>
-        public override async Task ActivateItem(T item)
+        /// <param name="cancellationToken"></param>
+        public override async Task ActivateItem(T item, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (item != null && item.Equals(ActiveItem))
             {
                 if (IsActive)
                 {
-                    await ScreenExtensions.TryActivate(item);
+                    await ScreenExtensions.TryActivate(item, cancellationToken);
                     OnActivationProcessed(item, true);
                 }
                 return;
@@ -27,7 +29,7 @@ namespace Caliburn.Micro {
             var closeResult = await CloseStrategy.Execute(new[] { ActiveItem });
             if (closeResult.CanClose)
             {
-                await ChangeActiveItem(item, true);
+                await ChangeActiveItem(item, true, cancellationToken);
             }
             else
             {
@@ -40,7 +42,9 @@ namespace Caliburn.Micro {
         /// </summary>
         /// <param name="item">The item to close.</param>
         /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-        public override async Task DeactivateItem(T item, bool close) {
+        /// <param name="cancellationToken"></param>
+        public override async Task DeactivateItem(T item, bool close, CancellationToken cancellationToken = default(CancellationToken))
+        {
             if (item == null || !item.Equals(ActiveItem)) {
                 return;
             }
@@ -48,7 +52,7 @@ namespace Caliburn.Micro {
             var closeResult = await CloseStrategy.Execute(new[] { ActiveItem });
             if (closeResult.CanClose)
             {
-                await ChangeActiveItem(default(T), closeResult.CanClose);
+                await ChangeActiveItem(default(T), closeResult.CanClose, cancellationToken);
             }
         }
 
@@ -64,16 +68,19 @@ namespace Caliburn.Micro {
         /// <summary>
         /// Called when activating.
         /// </summary>
-        protected override async Task OnActivate() {
-            await ScreenExtensions.TryActivate(ActiveItem);
+        /// <param name="cancellationToken"></param>
+        protected override Task OnActivate(CancellationToken cancellationToken = new CancellationToken()) {
+            return ScreenExtensions.TryActivate(ActiveItem, cancellationToken);
         }
 
         /// <summary>
         /// Called when deactivating.
         /// </summary>
         /// <param name="close">Indicates whether this instance will be closed.</param>
-        protected override async Task OnDeactivate(bool close) {
-            await ScreenExtensions.TryDeactivate(ActiveItem, close);
+        /// <param name="cancellationToken"></param>
+        protected override  Task OnDeactivate(bool close, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ScreenExtensions.TryDeactivate(ActiveItem, close, cancellationToken);
         }
 
         /// <summary>

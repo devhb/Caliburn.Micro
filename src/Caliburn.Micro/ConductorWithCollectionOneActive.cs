@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     using System;
@@ -59,20 +60,21 @@ namespace Caliburn.Micro {
                 /// Activates the specified item.
                 /// </summary>
                 /// <param name="item">The item to activate.</param>
-                public override async Task ActivateItem(T item)
+                /// <param name="cancellationToken"></param>
+                public override async Task ActivateItem(T item, CancellationToken cancellationToken = default(CancellationToken))
                 {
                     if (item != null && item.Equals(ActiveItem))
                     {
                         if (IsActive)
                         {
-                            await ScreenExtensions.TryActivate(item);
+                            await ScreenExtensions.TryActivate(item, cancellationToken);
                             OnActivationProcessed(item, true);
                         }
 
                         return;
                     }
 
-                    await ChangeActiveItem(item, false);
+                    await ChangeActiveItem(item, false, cancellationToken);
                 }
 
                 /// <summary>
@@ -80,7 +82,8 @@ namespace Caliburn.Micro {
                 /// </summary>
                 /// <param name="item">The item to close.</param>
                 /// <param name="close">Indicates whether or not to close the item after deactivating it.</param>
-                public override async Task DeactivateItem(T item, bool close)
+                /// <param name="cancellationToken"></param>
+                public override async Task DeactivateItem(T item, bool close, CancellationToken cancellationToken = default(CancellationToken))
                 {
                     if (item == null)
                     {
@@ -89,7 +92,7 @@ namespace Caliburn.Micro {
 
                     if (!close)
                     {
-                        await ScreenExtensions.TryDeactivate(item, false);
+                        await ScreenExtensions.TryDeactivate(item, false, cancellationToken);
                     }
                     else
                     {
@@ -101,7 +104,7 @@ namespace Caliburn.Micro {
                     }
                 }
 
-                async Task CloseItemCore(T item) {
+                private async Task CloseItemCore(T item) {
                     if (item.Equals(ActiveItem))
                     {
                         var index = items.IndexOf(item);
@@ -178,26 +181,28 @@ namespace Caliburn.Micro {
                 /// <summary>
                 /// Called when activating.
                 /// </summary>
-                protected override async Task OnActivate()
+                /// <param name="cancellationToken"></param>
+                protected override async Task OnActivate(CancellationToken cancellationToken = default(CancellationToken))
                 {
-                    await ScreenExtensions.TryActivate(ActiveItem);
+                    await ScreenExtensions.TryActivate(ActiveItem, cancellationToken);
                 }
 
                 /// <summary>
                 /// Called when deactivating.
                 /// </summary>
                 /// <param name="close">Indicates whether this instance will be closed.</param>
-                protected override async Task OnDeactivate(bool close) {
+                /// <param name="cancellationToken"></param>
+                protected override async Task OnDeactivate(bool close, CancellationToken cancellationToken = default(CancellationToken)) {
 
                     if (close)
                     {
-                        var deactivateables = items.OfType<IDeactivate>().Select(x => x.Deactivate(true));
+                        var deactivateables = items.OfType<IDeactivate>().Select(x => x.Deactivate(true, cancellationToken));
                         await Task.WhenAll(deactivateables);
                         items.Clear();
                     }
                     else
                     {
-                        await ScreenExtensions.TryDeactivate(ActiveItem, false);
+                        await ScreenExtensions.TryDeactivate(ActiveItem, false, cancellationToken);
                     }
                 }
 

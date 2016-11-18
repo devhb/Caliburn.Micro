@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro.WPF.Tests {
     using System;
@@ -143,8 +144,9 @@ namespace Caliburn.Micro.WPF.Tests {
                 return Task.FromResult(IsClosable);
             }
 
-            protected override Task OnDeactivate(bool close) {
-                base.OnDeactivate(close);
+            protected override Task OnDeactivate(bool close, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                base.OnDeactivate(close, cancellationToken);
                 IsClosed = close;
                 return TaskExtensions.CompletedTask;
             }

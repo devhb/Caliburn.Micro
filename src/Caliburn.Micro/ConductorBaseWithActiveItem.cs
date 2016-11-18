@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
     /// <summary>
@@ -30,13 +31,14 @@ namespace Caliburn.Micro {
         /// </summary>
         /// <param name="newItem">The new item to activate.</param>
         /// <param name="closePrevious">Indicates whether or not to close the previous active item.</param>
-        protected virtual async Task ChangeActiveItem(T newItem, bool closePrevious)
+        /// <param name="cancellationToken"></param>
+        protected virtual async Task ChangeActiveItem(T newItem, bool closePrevious, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await ScreenExtensions.TryDeactivate(activeItem, closePrevious);
+            await ScreenExtensions.TryDeactivate(activeItem, closePrevious, cancellationToken);
 
             newItem = EnsureItem(newItem);
 
-            if (IsActive) await ScreenExtensions.TryActivate(newItem);
+            if (IsActive) await ScreenExtensions.TryActivate(newItem, cancellationToken);
 
             activeItem = newItem;
             NotifyOfPropertyChange("ActiveItem");
