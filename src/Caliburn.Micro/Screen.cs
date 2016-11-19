@@ -92,34 +92,121 @@ namespace Caliburn.Micro {
                 IsActive = active;
             }
         }
+
+        //async Task IActivate.Activate(CancellationToken cancellationToken)
+        //{
+        //    var state = new ActivationState(isInitialized, isActive);
+        //    var wasCanceled = false;
+        //    var wasRaisedWhileInitilazation = false;
+        //    try
+        //    {
+
+        //        if (IsActive)
+        //        {
+        //            return;
+        //        }
+
+        //        var initialized = false;
+        //        var handler = Activated;
+        //        // raise event to let the framework show the ui before we initializing
+        //        if (!IsInitialized)
+        //        {
+        //            var handler1 = handler;
+        //            await Execute.OnUIThreadAsync(() => handler1?.Invoke(this, new ActivationEventArgs { WasInitialized = false }));
+        //            wasRaisedWhileInitilazation = true;
+        //        }
+
+        //        if (!IsInitialized)
+        //        {
+        //            IsInitialized = initialized = true;
+        //            Log.Info("**** Initializing {0}.", this);
+        //            await OnInitialize(cancellationToken);
+        //        }
+
+        //        IsActive = true;
+        //        Log.Info("Activating {0}.", this);
+        //        await OnActivate(cancellationToken);
+        //        Log.Info("**** Activating finished {0}.", this);
+
+        //        if (!wasRaisedWhileInitilazation)
+        //        {
+        //            handler = Activated;
+        //            if (handler != null)
+        //            {
+        //                handler(this,
+        //                    new ActivationEventArgs
+        //                    {
+        //                        WasInitialized = initialized
+        //                    });
+        //            }
+        //        }
+
+
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+        //        wasCanceled = true;
+        //        Log.Info("**** Activating canceled {0}.", this);
+
+        //        throw;
+        //    }
+        //    finally
+        //    {
+        //        if (wasCanceled)
+        //        {
+        //            IsActive = state.IsActive;
+        //            IsInitialized = state.IsInitialized;
+        //        }
+        //    }
+        //}
+
         async Task IActivate.Activate(CancellationToken cancellationToken)
         {
-            if (IsActive)
+            var wasCanceled = false;
+            var state = new ActivationState(isInitialized, isActive);
+            try
             {
-                return;
-            }
-
-            var initialized = false;
-
-            if (!IsInitialized)
-            {
-                IsInitialized = initialized = true;
-                await OnInitialize(cancellationToken);
-            }
-
-            IsActive = true;
-            Log.Info("Activating {0}.", this);
-            await OnActivate(cancellationToken);
-
-            var handler = Activated;
-            if (handler != null)
-            {
-                handler(this, new ActivationEventArgs
+                if (IsActive)
                 {
-                    WasInitialized = initialized
-                });
+                    return;
+                }
+
+                var initialized = false;
+                
+                if (!IsInitialized)
+                {
+                    IsInitialized = initialized = true;
+                    await OnInitialize(cancellationToken);
+                }
+                
+                IsActive = true;
+                Log.Info("Activating {0}.", this);
+                
+                await OnActivate(cancellationToken);
+
+                var handler = Activated;
+                handler?.Invoke(this,
+                    new ActivationEventArgs
+                    {
+                        WasInitialized = initialized
+                    });
+            }
+            catch (OperationCanceledException)
+            {
+                wasCanceled = true;
+                Log.Info($"Canceling Activate {this}");
+                throw;
+            }
+            finally
+            {
+                if (wasCanceled)
+                {
+                    IsActive = state.IsActive;
+                    IsInitialized = state.IsInitialized;
+                }
             }
         }
+    
 
         /// <summary>
         /// Called when initializing.

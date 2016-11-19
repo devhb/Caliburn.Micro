@@ -67,13 +67,16 @@ namespace Caliburn.Micro {
                     {
                         if (IsActive)
                         {
+                            cancellationToken.ThrowIfCancellationRequested();
                             await ScreenExtensions.TryActivate(item, cancellationToken);
+
+                            cancellationToken.ThrowIfCancellationRequested();
                             OnActivationProcessed(item, true);
                         }
 
                         return;
                     }
-
+                    cancellationToken.ThrowIfCancellationRequested();
                     await ChangeActiveItem(item, false, cancellationToken);
                 }
 

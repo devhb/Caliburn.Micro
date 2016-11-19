@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Caliburn.Micro {
@@ -25,24 +26,34 @@ namespace Caliburn.Micro {
             get { return ActiveItem; }
             set { ActiveItem = (T)value; }
         }
-
+        
         /// <summary>
         /// Changes the active item.
         /// </summary>
         /// <param name="newItem">The new item to activate.</param>
         /// <param name="closePrevious">Indicates whether or not to close the previous active item.</param>
         /// <param name="cancellationToken"></param>
-        protected virtual async Task ChangeActiveItem(T newItem, bool closePrevious, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            await ScreenExtensions.TryDeactivate(activeItem, closePrevious, cancellationToken);
+        protected virtual async Task ChangeActiveItem(T newItem, bool closePrevious, CancellationToken cancellationToken = default(CancellationToken)) {
+            T previousActiveItem = activeItem;
+            try {
+                await ScreenExtensions.TryDeactivate(activeItem, closePrevious, cancellationToken);
 
-            newItem = EnsureItem(newItem);
+                newItem = EnsureItem(newItem);
+                
+                if (IsActive) await ScreenExtensions.TryActivate(newItem, cancellationToken);
 
-            if (IsActive) await ScreenExtensions.TryActivate(newItem, cancellationToken);
+                activeItem = newItem;
 
-            activeItem = newItem;
-            NotifyOfPropertyChange("ActiveItem");
-            OnActivationProcessed(activeItem, true);
+                NotifyOfPropertyChange("ActiveItem");
+                OnActivationProcessed(activeItem, true);
+            }
+            catch (OperationCanceledException) {
+                Log.Info($"Canceling ChangeActiveItem {this}");
+                activeItem = previousActiveItem;
+                throw;
+            }
         }
+
+        static readonly ILog Log = LogManager.GetLog(typeof(ConductorBaseWithActiveItem<>));
     }
 }
