@@ -39,12 +39,18 @@ namespace Caliburn.Micro {
                 await ScreenExtensions.TryDeactivate(activeItem, closePrevious, cancellationToken);
 
                 newItem = EnsureItem(newItem);
-                
-                if (IsActive) await ScreenExtensions.TryActivate(newItem, cancellationToken);
 
                 activeItem = newItem;
 
+                // this notification about ActiveItem causes the ViewModelBinder do it's work so the view is displayed
+                // before OnInitialize/OnActivate are called
                 NotifyOfPropertyChange("ActiveItem");
+
+                if (IsActive)
+                {
+                    await ScreenExtensions.TryActivate(newItem, cancellationToken);
+                }
+
                 OnActivationProcessed(activeItem, true);
             }
             catch (OperationCanceledException) {
