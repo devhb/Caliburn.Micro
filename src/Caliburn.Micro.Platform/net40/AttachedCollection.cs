@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Windows;
-    using System.Windows.Interactivity;
+﻿using System.Collections.Specialized;
+using System.Linq;
+using System.Windows;
+using System.Windows.Interactivity;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A collection that can exist as part of a behavior.
     /// </summary>

@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A base implementation of <see cref = "IViewAware" /> which is capable of caching views by context.
     /// </summary>

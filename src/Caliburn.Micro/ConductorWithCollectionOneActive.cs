@@ -1,12 +1,10 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-
+namespace Caliburn.Micro.Async {
     public partial class Conductor<T> {
         /// <summary>
         /// An implementation of <see cref="IConductor"/> that holds on many items.

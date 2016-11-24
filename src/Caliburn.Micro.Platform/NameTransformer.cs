@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///  Class for managing the list of rules for doing name transformation.
     /// </summary>

@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Used to manage logging.
     /// </summary>

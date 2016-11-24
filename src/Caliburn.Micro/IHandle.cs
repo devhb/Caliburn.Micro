@@ -1,4 +1,4 @@
-﻿namespace Caliburn.Micro {
+﻿namespace Caliburn.Micro.Async {
     /// <summary>
     ///   A marker interface for classes that subscribe to messages.
     /// </summary>

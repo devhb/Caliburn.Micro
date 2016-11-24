@@ -1,4 +1,6 @@
-﻿namespace Caliburn.Micro.WPF.Tests {
+﻿using Caliburn.Micro.Async;
+
+namespace Caliburn.Micro.WPF.Tests {
 
     using System.Collections.Generic;
     using System.Linq;

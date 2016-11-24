@@ -1,4 +1,4 @@
-﻿namespace Caliburn.Micro {
+﻿namespace Caliburn.Micro.Async {
     /// <summary>
     /// Denotes an instance which has a display name.
     /// </summary>

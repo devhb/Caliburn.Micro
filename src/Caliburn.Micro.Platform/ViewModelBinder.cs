@@ -1,14 +1,15 @@
-﻿#if XFORMS
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif
 {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Threading.Tasks;
 #if XFORMS
     using UIElement = global::Xamarin.Forms.Element;
     using FrameworkElement = global::Xamarin.Forms.VisualElement;
@@ -19,7 +20,7 @@ namespace Caliburn.Micro
     using Microsoft.Xaml.Interactivity;
 #else
     using System.Windows;
-    using System.Windows.Interactivity;
+
 #endif
 
 #if WINDOWS_PHONE
@@ -214,7 +215,7 @@ namespace Caliburn.Micro
 #if XFORMS
             var noContext = Caliburn.Micro.Xamarin.Forms.Bind.NoContextProperty;
 #else
-            var noContext = Caliburn.Micro.Bind.NoContextProperty;
+            var noContext = Async.Bind.NoContextProperty;
 #endif
 
             if ((bool)view.GetValue(noContext)) {

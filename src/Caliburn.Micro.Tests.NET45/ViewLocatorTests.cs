@@ -1,3 +1,5 @@
+using Caliburn.Micro.Async;
+
 namespace Caliburn.Micro.WPF.Tests
 {
     using Xunit;

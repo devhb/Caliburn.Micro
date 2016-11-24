@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Allows custom code to execute after the return of a action.
     /// </summary>

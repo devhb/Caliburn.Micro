@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Contains details about the success or failure of an item's activation through an <see cref="IConductor"/>.
     /// </summary>

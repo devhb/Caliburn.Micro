@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///   An implementation of <see cref = "IResult" /> that enables sequential execution of multiple results.
     /// </summary>

@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A result decorator which executes a coroutine when the wrapped result was cancelled.
     /// </summary>

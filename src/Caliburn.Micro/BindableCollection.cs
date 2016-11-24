@@ -1,23 +1,23 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A base collection class that supports automatic UI thread marshalling.
     /// </summary>
     /// <typeparam name="T">The type of elements contained in the collection.</typeparam>
     public class BindableCollection<T> : ObservableCollection<T>, IObservableCollection<T> {
         /// <summary>
-        /// Initializes a new instance of the <see cref = "Caliburn.Micro.BindableCollection&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref = "BindableCollection{T}" /> class.
         /// </summary>
         public BindableCollection() {
             IsNotifying = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref = "Caliburn.Micro.BindableCollection&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref = "BindableCollection{T}" /> class.
         /// </summary>
         /// <param name = "collection">The collection from which the elements are copied.</param>
         public BindableCollection(IEnumerable<T> collection)

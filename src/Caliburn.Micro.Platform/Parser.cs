@@ -1,12 +1,16 @@
-﻿#if XFORMS
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Data;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 #if WinRT81
     using System.Reflection;
     using Windows.UI.Xaml;
@@ -24,14 +28,10 @@ namespace Caliburn.Micro
     using DependencyObject = global::Xamarin.Forms.BindableObject;
     using FrameworkElement = global::Xamarin.Forms.VisualElement;
 #else
-    using System.Reflection;
-    using System.Text.RegularExpressions;
-    using System.Windows;
-    using System.Windows.Data;
     using EventTrigger = System.Windows.Interactivity.EventTrigger;
     using TriggerBase = System.Windows.Interactivity.TriggerBase;
     using TriggerAction = System.Windows.Interactivity.TriggerAction;
-    using System.Text;
+
 #endif
 
     /// <summary>

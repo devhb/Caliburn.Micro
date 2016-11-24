@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///  Denotes a class which can handle a particular type of message and uses a Task to do so.
     /// </summary>

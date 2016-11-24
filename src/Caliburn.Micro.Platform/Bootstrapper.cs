@@ -1,11 +1,11 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Windows;
-    using System.Windows.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Inherit from this class in order to customize the configuration of the framework.
     /// </summary>

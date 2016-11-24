@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Extension methods for <see cref="IEnumerable&lt;T&gt;"/>
     /// </summary>

@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///   Interface used to define an object associated to a collection of children.
     /// </summary>

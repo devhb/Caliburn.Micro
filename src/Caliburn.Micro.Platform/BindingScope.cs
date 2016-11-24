@@ -1,7 +1,11 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+
+namespace Caliburn.Micro.Async {
 #if WinRT
     using System.ServiceModel;
     using Windows.UI.Xaml;
@@ -10,9 +14,7 @@
     using Windows.UI.Xaml.Media;
 #else
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Media;
-    using System.Windows.Media.Media3D;
+
 #endif
 
     /// <summary>

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 #if WinRT
 using Windows.UI.Xaml;
 #else
-using System.Windows;
+
 #endif
 
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 {
     /// <summary>
     /// Represents a resolver that takes a control and returns it's children

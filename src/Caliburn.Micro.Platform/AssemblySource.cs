@@ -1,12 +1,13 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+
+namespace Caliburn.Micro.Async {
 #if !WinRT
-    using System.Windows;
+
 #else
     using Windows.UI.Xaml;
 #endif

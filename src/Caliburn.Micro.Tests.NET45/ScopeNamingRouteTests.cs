@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using Caliburn.Micro.Async;
 using Xunit;
 
 namespace Caliburn.Micro.WPF.Tests

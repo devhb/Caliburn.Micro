@@ -1,4 +1,4 @@
-﻿namespace Caliburn.Micro {
+﻿namespace Caliburn.Micro.Async {
     /// <summary>
     /// A result decorator that overrides <see cref="ResultCompletionEventArgs.WasCancelled"/> of the decorated <see cref="IResult"/> instance.
     /// </summary>

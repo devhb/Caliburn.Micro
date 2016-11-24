@@ -1,11 +1,12 @@
-﻿#if XFORMS
+﻿using System;
+using System.Reflection;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif
 {
-    using System;
-    using System.Reflection;
 #if WinRT81
     using Windows.UI.Xaml;
     using TriggerBase = Microsoft.Xaml.Interactivity.IBehavior;

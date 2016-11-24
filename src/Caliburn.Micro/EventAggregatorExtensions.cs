@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Extensions for <see cref="IEventAggregator"/>.
     /// </summary>

@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Enables loosely-coupled publication of and subscription to events.
     /// </summary>

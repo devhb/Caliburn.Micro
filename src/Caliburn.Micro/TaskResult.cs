@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A couroutine that encapsulates an <see cref="System.Threading.Tasks.Task"/>.
     /// </summary>

@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using System.Runtime.Serialization;
+﻿using System;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A base class that implements the infrastructure for property change notification and automatically performs UI thread marshalling.
     /// </summary>

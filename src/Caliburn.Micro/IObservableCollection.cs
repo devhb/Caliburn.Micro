@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Represents a collection that is observable.
     /// </summary>

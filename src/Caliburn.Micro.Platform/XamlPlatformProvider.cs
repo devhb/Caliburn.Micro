@@ -1,14 +1,16 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+
+namespace Caliburn.Micro.Async {
 #if WinRT
     using System.Reflection;
     using Windows.UI.Core;
     using Windows.UI.Xaml;
 #else
     using System.Windows;
-    using System.Windows.Threading;
+
 #endif
 
     /// <summary>

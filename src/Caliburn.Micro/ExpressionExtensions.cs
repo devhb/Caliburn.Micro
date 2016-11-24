@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System.Linq.Expressions;
-    using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Extension for <see cref="Expression"/>.
     /// </summary>

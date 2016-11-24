@@ -7,7 +7,7 @@
     <ProjectGuid>{EF2C0C7D-3FFE-4884-9AAC-7622FEE66809}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Caliburn.Micro</RootNamespace>
+    <RootNamespace>Caliburn.Micro.Async</RootNamespace>
     <AssemblyName>Caliburn.Micro.Platform.Async</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

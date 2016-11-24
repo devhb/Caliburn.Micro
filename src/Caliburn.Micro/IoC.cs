@@ -1,8 +1,8 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Used by the framework to pull instances from an IoC container and to inject dependencies into certain existing classes.
     /// </summary>

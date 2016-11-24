@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
-    using System;
-
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Denotes an instance which may prevent closing.
     /// </summary>

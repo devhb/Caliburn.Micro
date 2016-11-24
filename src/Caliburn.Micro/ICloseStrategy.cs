@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Used to gather the results from multiple child elements which may or may not prevent closing.
     /// </summary>

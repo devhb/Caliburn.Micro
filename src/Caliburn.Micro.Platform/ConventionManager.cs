@@ -1,8 +1,15 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Markup;
+using System.Windows.Shapes;
+
+namespace Caliburn.Micro.Async {
 #if WinRT81
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
@@ -13,12 +20,6 @@
     using Windows.UI.Xaml.Shapes;
 #else
     using System.ComponentModel;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Data;
-    using System.Windows.Markup;
-    using System.Windows.Shapes;    
     using EventTrigger = System.Windows.Interactivity.EventTrigger;
 #endif
 #if !SILVERLIGHT && !WinRT

@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Caliburn.Micro.Async;
+using TaskExtensions = Caliburn.Micro.Async.TaskExtensions;
 
 namespace Caliburn.Micro.WPF.Tests {
     using System;

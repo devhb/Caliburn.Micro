@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
-    /// Extension methods to bring <see cref="System.Threading.Tasks.Task"/> and <see cref="Caliburn.Micro.IResult"/> together.
+    /// Extension methods to bring <see cref="System.Threading.Tasks.Task"/> and <see cref="IResult"/> together.
     /// </summary>
     public static class TaskExtensions {
 
@@ -18,7 +18,7 @@
         public static readonly Task CompletedTask = TrueTask;
 
         /// <summary>
-        /// Executes an <see cref="Caliburn.Micro.IResult"/> asynchronous.
+        /// Executes an <see cref="IResult"/> asynchronous.
         /// </summary>
         /// <param name="result">The coroutine to execute.</param>
         /// <param name="context">The context to execute the coroutine within.</param>
@@ -28,7 +28,7 @@
         }
 
         /// <summary>
-        /// Executes an <see cref="Caliburn.Micro.IResult&lt;TResult&gt;"/> asynchronous.
+        /// Executes an <see cref="IResult{TResult}"/> asynchronous.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="result">The coroutine to execute.</param>

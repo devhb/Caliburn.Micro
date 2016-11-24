@@ -1,12 +1,13 @@
-﻿#if XFORMS
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
 #if WinRT
     using Windows.UI.Xaml;
 #elif XFORMS

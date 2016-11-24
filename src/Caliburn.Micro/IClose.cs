@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Denotes an object that can be closed.
     /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Caliburn.Micro.Async;
 
 namespace Caliburn.Micro.WPF.Tests {
     using Xunit;

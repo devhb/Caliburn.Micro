@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.ComponentModel;
-    using System.Windows;
-    using System.Windows.Interactivity;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Interactivity;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Represents a parameter of an <see cref="ActionMessage"/>.
     /// </summary>

@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// The event args for the <see cref="IViewAware.ViewAttached"/> event.
     /// </summary>

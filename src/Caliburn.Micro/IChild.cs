@@ -1,4 +1,4 @@
-namespace Caliburn.Micro {
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Denotes a node within a parent/child hierarchy.
     /// </summary>

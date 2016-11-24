@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System;
+﻿using System;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A result decorator which rescues errors from the decorated result by executing a rescue coroutine.
     /// </summary>

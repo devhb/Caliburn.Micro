@@ -1,9 +1,15 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Interactivity;
+using System.Windows.Markup;
+using System.Windows.Media;
+
+namespace Caliburn.Micro.Async {
 #if WinRT81
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
@@ -15,12 +21,6 @@
     using EventTrigger = Microsoft.Xaml.Interactions.Core.EventTriggerBehavior;
 #else
     using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Data;
-    using System.Windows.Interactivity;
-    using System.Windows.Markup;
-    using System.Windows.Media;
     using EventTrigger = System.Windows.Interactivity.EventTrigger;
 #endif
 
@@ -469,7 +469,7 @@
                 handler = (s, e) => {
                     if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == matchingGuardName)
                     {
-                        Caliburn.Micro.Execute.OnUIThread(() => {
+                        Execute.OnUIThread(() => {
                             var message = context.Message;
                             if (message == null)
                             {

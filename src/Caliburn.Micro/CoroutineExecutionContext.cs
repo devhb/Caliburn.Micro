@@ -1,4 +1,4 @@
-﻿namespace Caliburn.Micro {
+﻿namespace Caliburn.Micro.Async {
     /// <summary>
     /// The context used during the execution of a Coroutine.
     /// </summary>

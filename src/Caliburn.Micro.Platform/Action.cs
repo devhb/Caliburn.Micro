@@ -1,7 +1,9 @@
-﻿#if XFORMS
+﻿using System.Windows;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif 
 {
 #if WinRT
@@ -14,7 +16,7 @@ namespace Caliburn.Micro
     using DependencyProperty = global::Xamarin.Forms.BindableProperty;
     using DependencyObject = global::Xamarin.Forms.BindableObject;
 #else
-    using System.Windows;
+    
 #endif
 
     /// <summary>

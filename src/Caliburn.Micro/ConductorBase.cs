@@ -1,11 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A base class for various implementations of <see cref="IConductor"/>.
     /// </summary>

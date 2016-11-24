@@ -1,9 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
-    using System;
-
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Denotes an instance which requires deactivation.
     /// </summary>

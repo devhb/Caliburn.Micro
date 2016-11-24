@@ -1,9 +1,9 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A dictionary in which the values are weak references.
     /// </summary>

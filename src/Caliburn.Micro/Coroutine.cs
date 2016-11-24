@@ -1,8 +1,8 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Manages coroutine execution.
     /// </summary>

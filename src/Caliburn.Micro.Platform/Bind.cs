@@ -1,10 +1,11 @@
-﻿#if XFORMS
+﻿using System.Windows.Data;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif 
 {
-    using System;
 #if WinRT
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Data;
@@ -16,7 +17,7 @@ namespace Caliburn.Micro
     using DependencyObject =global::Xamarin.Forms.BindableObject;
 #else
     using System.Windows;
-    using System.Windows.Data;
+
 #endif
 
     /// <summary>
@@ -165,7 +166,7 @@ namespace Caliburn.Micro
         /// <param name="dependencyObject">The ui to apply conventions to.</param>
         /// <returns>Whether or not conventions are applied.</returns>
 #if NET
-        [AttachedPropertyBrowsableForTypeAttribute(typeof(DependencyObject))]
+        [AttachedPropertyBrowsableForType(typeof(DependencyObject))]
 #endif
         public static bool GetAtDesignTime(DependencyObject dependencyObject) {
             return (bool)dependencyObject.GetValue(AtDesignTimeProperty);

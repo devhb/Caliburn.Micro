@@ -1,12 +1,12 @@
-﻿#if XFORMS
+﻿using System.Linq;
+using System.Windows.Interactivity;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif 
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 #if WinRT81
     using Windows.UI.Xaml;
     using Microsoft.Xaml.Interactivity;
@@ -19,7 +19,6 @@ namespace Caliburn.Micro
     using DependencyObject = global::Xamarin.Forms.BindableObject;
 #else
     using System.Windows;
-    using System.Windows.Interactivity;
     using TriggerBase = System.Windows.Interactivity.TriggerBase;
 #endif
 

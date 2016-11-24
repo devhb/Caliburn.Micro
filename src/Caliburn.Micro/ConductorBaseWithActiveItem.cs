@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// A base class for various implementations of <see cref="IConductor"/> that maintain an active item.
     /// </summary>

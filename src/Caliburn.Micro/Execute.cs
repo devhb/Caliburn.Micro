@@ -1,7 +1,7 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///   Enables easy marshalling of code to the UI thread.
     /// </summary>

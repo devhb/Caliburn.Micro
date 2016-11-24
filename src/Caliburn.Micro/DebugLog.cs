@@ -1,9 +1,9 @@
 ﻿#define DEBUG
 
-namespace Caliburn.Micro {
-    using System;
-    using System.Diagnostics;
+using System;
+using System.Diagnostics;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///   A simple logger thats logs everything to the debugger.
     /// </summary>

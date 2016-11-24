@@ -1,4 +1,4 @@
-﻿namespace Caliburn.Micro {
+﻿namespace Caliburn.Micro.Async {
     /// <summary>
     /// Access the current <see cref="IPlatformProvider"/>.
     /// </summary>

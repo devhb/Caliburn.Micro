@@ -1,4 +1,5 @@
 using System;
+using Caliburn.Micro.Async;
 using Xunit;
 
 namespace Caliburn.Micro.WPF.Tests {

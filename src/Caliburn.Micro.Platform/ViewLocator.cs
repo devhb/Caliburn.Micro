@@ -1,14 +1,15 @@
-﻿#if XFORMS
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text.RegularExpressions;
-    using System.Collections.Generic;
 #if XFORMS
     using global::Xamarin.Forms;
     using UIElement = global::Xamarin.Forms.Element;

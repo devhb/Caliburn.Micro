@@ -1,8 +1,8 @@
-﻿namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Interface for platform specific operations that need enlightenment.
     /// </summary>

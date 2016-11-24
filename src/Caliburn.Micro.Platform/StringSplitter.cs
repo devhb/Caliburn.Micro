@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Caliburn.Micro {
+namespace Caliburn.Micro.Async {
 
     /// <summary>
     /// Helper class when splitting strings

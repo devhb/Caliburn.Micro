@@ -1,11 +1,15 @@
-﻿#if XFORMS
+﻿using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
+
+#if XFORMS
 namespace Caliburn.Micro.Xamarin.Forms
 #else
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 #endif 
 {
-    using System;
-    using System.Linq;
 #if WinRT
     using System.Reflection;
     using Windows.ApplicationModel;
@@ -23,9 +27,7 @@ namespace Caliburn.Micro
     using ContentControl = global::Xamarin.Forms.ContentView;
 #else
     using System.ComponentModel;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Markup;
+
 #endif
 
     /// <summary>

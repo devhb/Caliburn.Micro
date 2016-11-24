@@ -1,10 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Caliburn.Micro {
-    using System;
-    using System.Collections.Generic;
-
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// An implementation of <see cref="IConductor"/> that holds on to and activates only one item at a time.
     /// </summary>

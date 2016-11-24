@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     ///  Denotes a class which can handle a particular type of message and uses a Coroutine to do so.
     /// </summary>

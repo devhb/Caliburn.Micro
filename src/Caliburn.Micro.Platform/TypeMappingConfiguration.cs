@@ -1,6 +1,6 @@
-﻿namespace Caliburn.Micro {
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace Caliburn.Micro.Async {
     /// <summary>
     /// Class to specify settings for configuring type mappings by the ViewLocator or ViewModelLocator
     /// </summary>

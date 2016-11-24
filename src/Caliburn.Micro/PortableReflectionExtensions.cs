@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Caliburn.Micro
+namespace Caliburn.Micro.Async
 {
     /// <summary>
     /// A collection of extension methods to help with differing reflection between the portable library and SL5
